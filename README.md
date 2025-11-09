@@ -36,7 +36,7 @@ But what is *block size*? The block size **here means **how many bytes your prog
 
 Before you start, let’s make a prediction:
 
-- Do you think reading with a small block size (like 1 KB) will be faster or slower than a large block size (like 64 KB)?  Why do you think so?
+- Do you think reading with a small block size (like 1 KB) will be faster or slower than a large block size (like 16 KB)?  Why do you think so?
 
 Let’s write it down in a table like this:
 
@@ -45,7 +45,6 @@ Let’s write it down in a table like this:
 | 1,024 |  |  |  |
 | 4,096 |  |  |  |
 | 16,384 |  |  |  |
-| 65,536 |  |  |  |
 
 Now, test your prediction. Run your program in sequential mode (we will tell you later what this is) several times with different block sizes:
 
@@ -53,13 +52,12 @@ Now, test your prediction. Run your program in sequential mode (we will tell you
 ./benchmark testfile.bin 1024 sequential
 ./benchmark testfile.bin 4096 sequential
 ./benchmark testfile.bin 16384 sequential
-./benchmark testfile.bin 65536 sequential
 ```
 
 Record the results in the table, then answer the following question:
 
-- Big or small block size can improve the performance?
-- Why is that?
+- Big or small block size can improve the performance? Why is that?
+- If the block sizes keep getting bigger and bigger, what do you think will happen to the performance?
 
 # Step 3: Random vs Sequential Access
 
@@ -69,6 +67,21 @@ Again, before you begin, let’s make some predictions:
 
 - Which access pattern do you think will be faster, sequential or random?
 - How big do you expect the difference to be?
+
+Here’s a part of the snippet that we will run: 
+
+```c
+    size_t total_read = 0;
+    while (total_read < filesize) {
+        if (random) { // if random flag is True, we will randomly pick an offset
+            off_t pos = (rand() % (filesize / block_size)) * block_size;
+            lseek(fd, pos, SEEK_SET);
+        }
+        ssize_t bytes = read(fd, buf, block_size);
+        if (bytes <= 0) break;
+        total_read += bytes;
+    }
+```
 
 Run both for comparison:
 
@@ -83,12 +96,10 @@ Record your findings:
 | --- | --- | --- | --- |
 | Sequential | 4,096 |  |  |
 | Random | 4,096 |  |  |
-| Sequential | 65,536 |  |  |
-| Random | 65,536 |  |  |
 
 Answer the following questions:
 
-- Which one is faster (sequential vs random)? and why do you think it’s faster?  can you guess what happen at a low level?
+- Which one is faster (sequential vs random)? and why do you think it’s faster?
 
 # Step 4: Buffered vs Synced Writes
 
@@ -98,12 +109,23 @@ When you call `write()`, Linux usually doesn’t send the data to the disk right
 
 - What could be a risk of using write()?
 
-To ensure data actually reaches disk immediately, programs can call fsync(fd), which forces the OS to flush the dirty pages to the physical device. Of course, that will be much slower.
+To ensure data actually reaches disk immediately, programs can call **`fsync(fd)`**, which forces the OS to flush the dirty pages to the physical device. Of course, that will be much slower.
+
+Here is our simple program to do a fun experiment:
+
+```c
+    for (int i = 0; i < 1024; i++) {  // write 1024 blocks
+        if (write(fd, buf, size) != size) {
+            perror("write"); exit(1);
+        }
+        if (use_fsync) // flush if the use_fsync flag is True
+            fsync(fd);
+    }
+```
 
 Run this experiment to see:
 
 ```bash
-gcc write_sync.c -o write_sync
 ./write_sync 4096 normal
 ./write_sync 4096 sync
 ```
@@ -118,4 +140,4 @@ Record your results:
 Now answer the following question:
 
 - How much slower is `write()` when followed by `fsync()`?
-- When is a good idea to use `fsync()`? Can you think of any application?
+- Will there ever be a good time to use `fsync()`? Can you think of any use case or application?
