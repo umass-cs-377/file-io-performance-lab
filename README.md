@@ -98,7 +98,7 @@ When you call `write()`, Linux usually doesn’t send the data to the disk right
 
 - What could be a risk of using write()?
 
-To ensure data actually reaches disk, programs can call **`fsync(fd)`**, which forces the OS to flush the dirty pages to the physical device. Of course, that will be much slower.
+To ensure data actually reaches disk immediately, programs can call fsync(fd), which forces the OS to flush the dirty pages to the physical device. Of course, that will be much slower.
 
 Run this experiment to see:
 
