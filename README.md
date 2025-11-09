@@ -1,4 +1,4 @@
-# Lab 12 - File I/O Performance
+# Lab: File I/O Performance
 
 # Purpose
 
