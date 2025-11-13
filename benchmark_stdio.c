@@ -32,9 +32,9 @@ int main(int argc, char *argv[]) {
 
     size_t total = 0;
     while (total < filesize) {
-        if (random) {
-            long pos = (rand() % (filesize / block_size)) * block_size;
-            fseek(fp, pos, SEEK_SET);
+        if (random) { // if random flag is True, we will randomly pick an offset
+            // TODO: get a random offset within with block boundary
+            // TODO: move the file offset to the offset above using lseek
         }
         size_t n = fread(buf, 1, block_size, fp);
         if (n == 0) break;

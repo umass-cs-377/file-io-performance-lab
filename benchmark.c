@@ -33,9 +33,9 @@ int main(int argc, char *argv[]) {
 
     size_t total_read = 0;
     while (total_read < filesize) {
-        if (random) {
-            off_t pos = (rand() % (filesize / block_size)) * block_size;
-            lseek(fd, pos, SEEK_SET);
+        if (random) {// if random flag is True, we will randomly pick an offset
+            // TODO: get a random offset within with block boundary
+            // TODO: move the file offset to the offset above using lseek
         }
         ssize_t bytes = read(fd, buf, block_size);
         if (bytes <= 0) break;
