@@ -1,5 +1,3 @@
-# Lab: File I/O Performance
-
 # Purpose
 
 In this lab, you will explore how different file access patterns and block sizes affect performance. The goal is to understand how the operating system handles I/O under the hood, and how sequential versus random access, as well as block size, impact the time it takes to read data from a file. You will implement a simple benchmark in C, measure performance, and analyze the results.
@@ -26,7 +24,7 @@ You will begin by creating a large test file. On your terminal, use the followin
 dd if=/dev/urandom of=testfile.bin bs=1M count=100
 ```
 
-This will generate a file named `testfile.bin` in your work directory.  Use `ls -lh` to make sure the file is created and the size is correct.
+This will generate a file named `testfile.bin` in your work directory.  Use `ls -lh` to make sure the file is created and the size is correct.  Don’t forget to delete it after you finish this lab.
 
 # Step 2: Reads with Different Block Sizes
 
@@ -44,6 +42,7 @@ Let’s write it down in a table like this:
 | --- | --- | --- | --- |
 | 1,024 |  |  |  |
 | 4,096 |  |  |  |
+| 8192 |  |  |  |
 | 16,384 |  |  |  |
 
 Now, test your prediction. Run your program in sequential mode (we will tell you later what this is) several times with different block sizes:
@@ -51,6 +50,7 @@ Now, test your prediction. Run your program in sequential mode (we will tell you
 ```c
 ./benchmark testfile.bin 1024 sequential
 ./benchmark testfile.bin 4096 sequential
+./benchmark testfile.bin 8192 sequential
 ./benchmark testfile.bin 16384 sequential
 ```
 
@@ -68,7 +68,7 @@ Again, before you begin, let’s make some predictions:
 - Which access pattern do you think will be faster, sequential or random?
 - How big do you expect the difference to be?
 
-Here’s a part of the snippet that we will run: 
+For random access, please update the following part of the code.
 
 ```c
     size_t total_read = 0;
@@ -99,7 +99,12 @@ Record your findings:
 
 Answer the following questions:
 
-- Which one is faster (sequential vs random)? and why do you think it’s faster?
+- If 100,000,000 bytes file size is and `read()`’s block size is 4,096 bytes.
+    - How many **full blocks** can be read from this file?
+    - How many bytes will remain after reading all full blocks?
+    - What is the byte offset of the start of the last full block?
+    - If the random block number is 7, at what byte offset will the read operation start?
+    - How many total reads required to read the entire file?
 
 # Step 4: Buffered vs Synced Writes
 
@@ -107,7 +112,7 @@ So far, you’ve measured `read` performance. Now you’ll explore what happens 
 
 When you call `write()`, Linux usually doesn’t send the data to the disk right away. It stores it in the **kernel’s page cache** and marks it as “dirty.” Later, a background process (the *flush daemon*) writes it to disk. This makes `write()` fast.
 
-- What could be a risk of using write()?
+- You might want to think: Why buffering in kernel cache and write once in a while, make write() faster?
 
 To ensure data actually reaches disk immediately, programs can call **`fsync(fd)`**, which forces the OS to flush the dirty pages to the physical device. Of course, that will be much slower.
 
