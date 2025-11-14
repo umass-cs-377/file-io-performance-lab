@@ -74,10 +74,10 @@ For random access, please update the following part of the code.
     size_t total_read = 0;
     while (total_read < filesize) {
         if (random) { // if random flag is True, we will randomly pick an offset
-                  // TODO: pick a random block within block boundary
-                  // for example, if the filesize is 9000 bytes and blocksize is 4000, then we have 3 blocks.
-                  // TODO: move the file offset to block above using lseek
-                  // for example, if the random block is 2 and blocksize is 4000, the offset should be block# * blocksize.
+            // TODO: pick a random block within block boundary
+            // for example, if the filesize is 9000 bytes and blocksize is 4000, then we have 3 blocks.
+            // TODO: move the file offset to block above using lseek
+            // for example, if the random block is 2 and blocksize is 4000, the offset should be block# * blocksize.
         }
         ssize_t bytes = read(fd, buf, block_size);
         if (bytes <= 0) break;
