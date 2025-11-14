@@ -74,8 +74,8 @@ Here’s a part of the snippet that we will run:
     size_t total_read = 0;
     while (total_read < filesize) {
         if (random) { // if random flag is True, we will randomly pick an offset
-            off_t pos = (rand() % (filesize / block_size)) * block_size;
-            lseek(fd, pos, SEEK_SET);
+            // TODO: pick a random block within block boundary
+            // TODO: move the file offset to block above using lseek
         }
         ssize_t bytes = read(fd, buf, block_size);
         if (bytes <= 0) break;
