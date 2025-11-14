@@ -30,7 +30,7 @@ This will generate a file named `testfile.bin` in your work directory.  Use `ls 
 
 In this step, we will do a quick experiment and see how the **block size** you use to read a file changes performance.
 
-But what is *block size*? The block size **here means **how many bytes your program reads from the file at once**. When you call `read(fd, buf, block_size)`, the operating system copies that many bytes from the disk (or cache) into memory before returning.
+But what is *block size*? The block size **here means **how many bytes your program reads from the file at once**. When you call `read(fd, buf, block_size)`, the operating system copies that many bytes from the disk into memory before returning.
 
 Before you start, let’s make a prediction:
 
